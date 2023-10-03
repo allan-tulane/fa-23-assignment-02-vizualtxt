@@ -4,6 +4,7 @@ See assignment-02.pdf for details.
 """
 import time
 
+
 class BinaryNumber:
     """ done """
     def __init__(self, n):
@@ -47,16 +48,43 @@ def pad(x,y):
 
 def subquadratic_multiply(x, y):
     ### TODO
+    # set base case
+    if x.decimal_val <= 1 and y.decimal_val <= 1:
+      return BinaryNumber(x.decimal_val * y.decimal_val)
+      
+    else:
+      # create and pad binary vectors from x and y
+      xVec = x.binary_vec
+      yVec = y.binary_vec
+      xVec, yVec = pad(xVec, yVec)
+      
+      # split vector and set n
+      x_left, x_right = split_number(xVec)
+      y_left, y_right = split_number(yVec)
+      
+      n = len(xVec)
+
+      # multiplication and recursion
+      subterm1 = subquadratic_multiply(BinaryNumber(x_left.decimal_val + x_right.decimal_val), BinaryNumber(y_left.decimal_val + y_right.decimal_val))
+      subterm2 = subquadratic_multiply(x_left, y_left)
+      subterm3 = subquadratic_multiply(x_right, y_right)
+      
+      return BinaryNumber(bit_shift(subterm2, n).decimal_val + bit_shift(BinaryNumber(subterm1.decimal_val - subterm2.decimal_val - subterm3.decimal_val), n//2).decimal_val + subterm3.decimal_val)
+  
+
     pass
     ###
 
 
 
+
 def time_multiply(x, y, f):
+
     start = time.time()
     # multiply two numbers x, y using function f
+    f(BinaryNumber(x), BinaryNumber(y))
     return (time.time() - start)*1000
 
-    
-    
-
+print(time_multiply(1000, 1000, subquadratic_multiply))
+print(subquadratic_multiply(BinaryNumber(1000), BinaryNumber(2)).decimal_val)
+  
